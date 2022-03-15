@@ -33,8 +33,10 @@ def main():
     url_long_polling = os.getenv('URL_LONG_POLLING')
     #result = get_user_reviews(url_user_reviews, authorization)
     while True:
-        print(long_polling(url_long_polling, authorization), f'LOCAL TIMESTAMP: {time.time()}')
-
+        try:
+            print(long_polling(url_long_polling, authorization), f'LOCAL TIMESTAMP: {time.time()}')
+        except ConnectionError:
+            pass
 
 if __name__ == '__main__':
     main()
