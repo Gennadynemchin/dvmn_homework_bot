@@ -1,9 +1,9 @@
 import requests
 import os
-from time import time
 import telegram
 import logging
 from dotenv import load_dotenv
+from time import time
 
 
 def long_polling(url, token):
@@ -20,7 +20,9 @@ def long_polling(url, token):
                 params = {'timestamp': decoded_response['timestamp_to_request']}
                 continue
             elif decoded_response['status'] == 'found':
-                bot.send_message(chat_id=os.getenv('CHAT_ID'), text=f'Found')
+                bot.send_message(chat_id=os.getenv('CHAT_ID'),
+                                 text=f'{decoded_response["new_attempts"][0]["is_negative"]} '
+                                      f'{decoded_response["new_attempts"][0]["lesson_title"]}')
                 params = {'timestamp': time()}
                 continue
         except (requests.exceptions.Timeout,
