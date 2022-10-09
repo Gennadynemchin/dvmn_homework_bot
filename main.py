@@ -17,7 +17,6 @@ def long_polling(url, token, chat_id):
             response.raise_for_status()
             decoded_response = response.json()
             if decoded_response['status'] == 'timeout':
-                bot.send_message(chat_id=chat_id, text=f'Timeout')
                 params = {'timestamp': decoded_response['timestamp_to_request']}
                 continue
             elif decoded_response['status'] == 'found':
