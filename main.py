@@ -5,6 +5,8 @@ import logging
 from dotenv import load_dotenv
 from time import time
 
+logger = logging.getLogger(__name__)
+
 
 def long_polling(url, token, chat_id):
     bot = telegram.Bot(token=os.getenv('TG_TOKEN'))
@@ -42,7 +44,6 @@ def long_polling(url, token, chat_id):
 def main():
     load_dotenv()
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
     authorization = os.getenv('DVMN_AUTHORIZATION')
     url_long_polling = os.getenv('DVMN_URL_LONG_POLLING')
     chat_id = os.getenv('TG_CHAT_ID')
