@@ -15,15 +15,15 @@ def long_polling(url, token, chat_id):
         try:
             response = requests.get(url, headers=headers, params=params, timeout=timeout)
             response.raise_for_status()
-            decoded_response = response.json()
-            if decoded_response['status'] == 'timeout':
-                params = {'timestamp': decoded_response['timestamp_to_request']}
+            homework_response = response.json()
+            if homework_response['status'] == 'timeout':
+                params = {'timestamp': homework_response['timestamp_to_request']}
                 continue
-            elif decoded_response['status'] == 'found':
-                last_attempt_timestamp = decoded_response['last_attempt_timestamp']
-                work_title = decoded_response["new_attempts"][0]["lesson_title"]
-                work_link = decoded_response["new_attempts"][0]["lesson_url"]
-                work_status = decoded_response["new_attempts"][0]["is_negative"]
+            elif homework_response['status'] == 'found':
+                last_attempt_timestamp = homework_response['last_attempt_timestamp']
+                work_title = homework_response["new_attempts"][0]["lesson_title"]
+                work_link = homework_response["new_attempts"][0]["lesson_url"]
+                work_status = homework_response["new_attempts"][0]["is_negative"]
                 if work_status:
                     bot.send_message(chat_id=chat_id,
                                      text=f"Работа '{work_title}' возвращена с проверки. Посмотреть ошибки и исправить"
