@@ -20,6 +20,7 @@ def long_polling(url, token, chat_id):
                 params = {'timestamp': decoded_response['timestamp_to_request']}
                 continue
             elif decoded_response['status'] == 'found':
+                last_attempt_timestamp = decoded_response['last_attempt_timestamp']
                 work_title = decoded_response["new_attempts"][0]["lesson_title"]
                 work_link = decoded_response["new_attempts"][0]["lesson_url"]
                 work_status = decoded_response["new_attempts"][0]["is_negative"]
@@ -30,7 +31,7 @@ def long_polling(url, token, chat_id):
                 elif not work_status:
                     bot.send_message(chat_id=chat_id,
                                      text=f"Работа '{work_title}' успешно выполнена. {work_link}")
-                params = {'timestamp': time()}
+                params = {'timestamp': last_attempt_timestamp}
                 continue
         except (requests.exceptions.Timeout,
                 requests.exceptions.HTTPError,
