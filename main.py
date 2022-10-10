@@ -43,10 +43,10 @@ def main():
     load_dotenv()
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
     logger = logging.getLogger(__name__)
-    authorization = os.getenv('AUTHORIZATION')
-    url_long_polling = os.getenv('URL_LONG_POLLING')
-    chat_id = os.getenv('CHAT_ID')
-    print(long_polling(url_long_polling, authorization, chat_id))
+    authorization = os.getenv('DVMN_AUTHORIZATION')
+    url_long_polling = os.getenv('DVMN_URL_LONG_POLLING')
+    chat_id = os.getenv('TG_CHAT_ID')
+    long_polling(url_long_polling, authorization, chat_id)
 
 
 if __name__ == '__main__':
