@@ -3,7 +3,7 @@ import os
 import telegram
 import logging
 from dotenv import load_dotenv
-from time import time
+from time import time, sleep
 
 logger = logging.getLogger(__name__)
 
@@ -13,14 +13,19 @@ def long_polling(url, token, chat_id):
     headers = {'Authorization': token}
     params = {'timestamp': time()}
     timeout = 150
+    counter_response_timeout = 0
     while True:
         try:
             response = requests.get(url, headers=headers, params=params, timeout=timeout)
             response.raise_for_status()
             homework_response = response.json()
             if homework_response['status'] == 'timeout':
+                counter_response_timeout += 1
                 params = {'timestamp': homework_response['timestamp_to_request']}
-                continue
+                if counter_response_timeout == 5:
+                    sleep(300)
+                    counter_response_timeout = 0
+                    continue
             elif homework_response['status'] == 'found':
                 last_attempt_timestamp = homework_response['last_attempt_timestamp']
                 work_title = homework_response["new_attempts"][0]["lesson_title"]
@@ -35,8 +40,7 @@ def long_polling(url, token, chat_id):
                                      text=f"Работа '{work_title}' успешно выполнена. {work_link}")
                 params = {'timestamp': last_attempt_timestamp}
                 continue
-        except (requests.exceptions.Timeout,
-                requests.exceptions.HTTPError,
+        except (requests.exceptions.HTTPError,
                 requests.RequestException):
             continue
 
