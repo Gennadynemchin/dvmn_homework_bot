@@ -6,9 +6,9 @@ If there is checked homework has found - the bot sends message to a user.
 You have to add some variables in .env:
 ```
 'TG_TOKEN'='<TOKEN YOU GOT FROM THE @BOTFATHER OF TELEGRAM>'
-'AUTHORIZATION'='<YOUR DEVMAN API TOKEN>' (see https://dvmn.org/api/docs for information)
-'CHAT_ID'='<YOUR TELEGRAM CHAT_ID>'
-'URL_LONG_POLLING'='<URL THAT USES FOR LONG POLLING REQUESTS>' (see https://dvmn.org/api/docs for information)
+'DVMN_AUTHORIZATION'='<YOUR DEVMAN API TOKEN>' (see https://dvmn.org/api/docs for information)
+'TG_CHAT_ID'='<YOUR TELEGRAM CHAT_ID>'
+'DVMN_URL_LONG_POLLING'='<URL THAT USES FOR LONG POLLING REQUESTS>' (see https://dvmn.org/api/docs for information)
 ```
 
 ### How to install
