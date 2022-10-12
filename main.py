@@ -20,12 +20,8 @@ def long_polling(url, token, chat_id):
             response.raise_for_status()
             homework_response = response.json()
             if homework_response['status'] == 'timeout':
-                counter_response_timeout += 1
                 params = {'timestamp': homework_response['timestamp_to_request']}
-                if counter_response_timeout == 5:
-                    sleep(300)
-                    counter_response_timeout = 0
-                    continue
+                continue
             elif homework_response['status'] == 'found':
                 last_attempt_timestamp = homework_response['last_attempt_timestamp']
                 work_title = homework_response["new_attempts"][0]["lesson_title"]
@@ -42,6 +38,10 @@ def long_polling(url, token, chat_id):
                 continue
         except (requests.exceptions.HTTPError,
                 requests.RequestException):
+            counter_response_timeout += 1
+            if counter_response_timeout == 5:
+                sleep(300)
+                counter_response_timeout = 0
             continue
 
 
