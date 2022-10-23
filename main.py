@@ -48,9 +48,15 @@ def long_polling(url, token, chat_id):
 def main():
     load_dotenv()
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+    '''
     authorization = os.getenv('DVMN_AUTHORIZATION')
     url_long_polling = os.getenv('DVMN_URL_LONG_POLLING')
     chat_id = os.getenv('TG_CHAT_ID')
+    '''
+    # env for Heroku
+    authorization = os.environ['DVMN_AUTHORIZATION']
+    url_long_polling = os.environ['DVMN_URL_LONG_POLLING']
+    chat_id = os.environ['TG_CHAT_ID']
     long_polling(url_long_polling, authorization, chat_id)
 
 
