@@ -50,7 +50,7 @@ def long_polling(url, bot, token, chat_id):
             counter_response_timeout += 1
             sleep(5)
             bot.send_message(chat_id=chat_id, text=f'Something wrong with the connection. '
-                                                   f'Trying to reconnect {counter_response_timeout}')
+                                                   f'Trying to reconnect ({counter_response_timeout}/5)')
             if counter_response_timeout == 5:
                 sleep(300)
                 counter_response_timeout = 0
@@ -74,7 +74,7 @@ def main():
         logger.info(msg='The bot has been started')
         long_polling(url_long_polling, bot, authorization, chat_id)
     finally:
-        logger.error(msg='Error has occured', exc_info=True)
+        logger.error(msg='Error has occured\n', exc_info=True)
 
 
 if __name__ == '__main__':
