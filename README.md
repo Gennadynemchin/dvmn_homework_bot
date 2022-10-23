@@ -27,6 +27,21 @@ Then use `pip` (or `pip3`, if there is a conflict with Python2) to install depen
 ```
 pip install -r requirements.txt
 ```
+Run:
+```
+python3 main.py
+```
+### Deploy with Docker
+
+1. Copy this repository to your server:
+```
+git clone https://github.com/Gennadynemchin/dvmn_homework_bot.git
+```
+2. `cd dvmn_homework_bot`
+3. `touch .env`. Then fill all needed variables as shown above.
+4. Build an image:
+`docker build -t your-image-name . `
+5. Then `docker run -d your-image-name`
 
 ### Project Goals
 
