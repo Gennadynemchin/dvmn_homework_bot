@@ -38,10 +38,11 @@ python3 main.py
 git clone https://github.com/Gennadynemchin/dvmn_homework_bot.git
 ```
 2. `cd dvmn_homework_bot`
-3. `touch .env`. Then fill all needed variables as shown above.
-4. Build an image:
+3. `nano .env.example`. Then fill all needed variables as shown above.
+4. Save `.env.example` as `.env`
+5. Build an image:
 `docker build -t your-image-name . `
-5. Then `docker run -d your-image-name`
+6. Then `docker run -d your-image-name`
 
 ### Project Goals
 
