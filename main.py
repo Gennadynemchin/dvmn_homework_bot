@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 def long_polling(url, token, chat_id):
     # bot = telegram.Bot(token=os.getenv('TG_TOKEN'))
     bot = telegram.Bot(token=os.environ['TG_TOKEN'])
+    logger.info('The bot has been started')
     headers = {'Authorization': token}
     params = {'timestamp': time()}
     timeout = 150
