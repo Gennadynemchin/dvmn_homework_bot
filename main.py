@@ -48,7 +48,9 @@ def long_polling(url, bot, token, chat_id):
         except (requests.exceptions.HTTPError,
                 requests.RequestException):
             counter_response_timeout += 1
-            bot.send_message(chat_id=chat_id, text='Something wrong with the connection. Trying to reconnect')
+            sleep(5)
+            bot.send_message(chat_id=chat_id, text=f'Something wrong with the connection. '
+                                                   f'Trying to reconnect {counter_response_timeout}')
             if counter_response_timeout == 5:
                 sleep(300)
                 counter_response_timeout = 0
