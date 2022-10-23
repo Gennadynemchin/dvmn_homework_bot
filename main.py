@@ -5,13 +5,20 @@ import logging
 from dotenv import load_dotenv
 from time import time, sleep
 
-logger = logging.getLogger(__name__)
+
+class TelegramLogsHandler(logging.Handler):
+    def __init__(self, tg_bot, chat_id):
+        super().__init__()
+        self.tg_bot = tg_bot
+        self.chat_id = chat_id
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
-def long_polling(url, token, chat_id):
+def long_polling(url, bot, token, chat_id):
     # bot = telegram.Bot(token=os.getenv('TG_TOKEN'))
-    bot = telegram.Bot(token=os.environ['TG_TOKEN'])
-    logger.info('The bot has been started')
     headers = {'Authorization': token}
     params = {'timestamp': time()}
     timeout = 150
@@ -41,6 +48,7 @@ def long_polling(url, token, chat_id):
         except (requests.exceptions.HTTPError,
                 requests.RequestException):
             counter_response_timeout += 1
+            bot.send_message(chat_id=chat_id, text='Something wrong with the connection. Trying to reconnect')
             if counter_response_timeout == 5:
                 sleep(300)
                 counter_response_timeout = 0
@@ -49,17 +57,22 @@ def long_polling(url, token, chat_id):
 
 def main():
     load_dotenv()
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
-    '''
-    authorization = os.getenv('DVMN_AUTHORIZATION')
-    url_long_polling = os.getenv('DVMN_URL_LONG_POLLING')
-    chat_id = os.getenv('TG_CHAT_ID')
-    '''
-    # env for Heroku
     authorization = os.environ['DVMN_AUTHORIZATION']
     url_long_polling = os.environ['DVMN_URL_LONG_POLLING']
     chat_id = os.environ['TG_CHAT_ID']
-    long_polling(url_long_polling, authorization, chat_id)
+    tg_token = os.environ['TG_TOKEN']
+
+    bot = telegram.Bot(token=tg_token)
+
+    logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+    logger = logging.getLogger('MyLogger')
+    logger.addHandler(TelegramLogsHandler(tg_bot=bot, chat_id=chat_id))
+
+    try:
+        logger.info(msg='The bot has been started')
+        long_polling(url_long_polling, bot, authorization, chat_id)
+    finally:
+        logger.error(msg='Error has occured', exc_info=True)
 
 
 if __name__ == '__main__':
