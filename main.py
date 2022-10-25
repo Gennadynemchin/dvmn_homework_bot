@@ -4,6 +4,10 @@ import telegram
 import logging
 from dotenv import load_dotenv
 from time import time, sleep
+from requests.adapters import HTTPAdapter, Retry
+
+
+logger = logging.getLogger('MyLogger')
 
 
 class TelegramLogsHandler(logging.Handler):
@@ -18,14 +22,17 @@ class TelegramLogsHandler(logging.Handler):
 
 
 def long_polling(url, bot, token, chat_id):
-    # bot = telegram.Bot(token=os.getenv('TG_TOKEN'))
     headers = {'Authorization': token}
     params = {'timestamp': time()}
-    timeout = 150
-    counter_response_timeout = 0
+    s = requests.Session()
     while True:
         try:
-            response = requests.get(url, headers=headers, params=params, timeout=timeout)
+            total_retries = 5
+            backoff_factor = 1
+            timeout = 1
+            retries = Retry(total=total_retries, backoff_factor=backoff_factor)
+            s.mount(url, HTTPAdapter(max_retries=retries))
+            response = s.get(url, headers=headers, params=params, timeout=timeout)
             response.raise_for_status()
             homework_response = response.json()
             if homework_response['status'] == 'timeout':
@@ -44,17 +51,15 @@ def long_polling(url, bot, token, chat_id):
                     bot.send_message(chat_id=chat_id,
                                      text=f"Работа '{work_title}' успешно выполнена. {work_link}")
                 params = {'timestamp': last_attempt_timestamp}
-                continue
-        except (requests.exceptions.HTTPError,
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout,
+                requests.exceptions.HTTPError,
                 requests.RequestException):
-            counter_response_timeout += 1
-            sleep(5)
-            bot.send_message(chat_id=chat_id, text=f'Something wrong with the connection. '
-                                                   f'Trying to reconnect ({counter_response_timeout}/5)')
-            if counter_response_timeout == 5:
-                sleep(300)
-                counter_response_timeout = 0
+            logger.error('Get some sleep. Then try to reconnect')
+            sleep(300)
             continue
+        finally:
+            logger.exception('Except')
 
 
 def main():
@@ -65,16 +70,10 @@ def main():
     tg_token = os.environ['TG_TOKEN']
 
     bot = telegram.Bot(token=tg_token)
-
     logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
-    logger = logging.getLogger('MyLogger')
     logger.addHandler(TelegramLogsHandler(tg_bot=bot, chat_id=chat_id))
-
-    try:
-        logger.info(msg='The bot has been started')
-        long_polling(url_long_polling, bot, authorization, chat_id)
-    finally:
-        logger.error(msg='Error has occured\n', exc_info=True)
+    logger.info(msg='The bot has been started')
+    long_polling(url_long_polling, bot, authorization, chat_id)
 
 
 if __name__ == '__main__':
