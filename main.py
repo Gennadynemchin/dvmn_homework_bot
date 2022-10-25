@@ -1,3 +1,4 @@
+import socket
 import requests
 import os
 import telegram
@@ -56,10 +57,10 @@ def long_polling(url, bot, token, chat_id):
                 requests.exceptions.HTTPError,
                 requests.RequestException):
             logger.error('Get some sleep. Then try to reconnect')
-            sleep(300)
-            continue
-        finally:
-            logger.exception('Except')
+            sleep(2)
+        except socket.timeout:
+            logger.critical('Everything has gone down the cunt')
+
 
 
 def main():
