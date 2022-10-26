@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from time import time, sleep
 from requests.adapters import HTTPAdapter, Retry
 
-
 logger = logging.getLogger('MyLogger')
 
 
@@ -25,14 +24,14 @@ class TelegramLogsHandler(logging.Handler):
 def long_polling(url, bot, token, chat_id):
     headers = {'Authorization': token}
     params = {'timestamp': time()}
-    s = requests.Session()
+    session = requests.Session()
     while True:
         try:
             total_retries = 5
             backoff_factor = 150
             retries = Retry(total=total_retries, backoff_factor=backoff_factor)
-            s.mount(url, HTTPAdapter(max_retries=retries))
-            response = s.get(url, headers=headers, params=params)
+            session.mount(url, HTTPAdapter(max_retries=retries))
+            response = session.get(url, headers=headers, params=params)
             response.raise_for_status()
             homework_response = response.json()
             if homework_response['status'] == 'timeout':
@@ -51,14 +50,14 @@ def long_polling(url, bot, token, chat_id):
                     bot.send_message(chat_id=chat_id,
                                      text=f"Работа '{work_title}' успешно выполнена. {work_link}")
                 params = {'timestamp': last_attempt_timestamp}
-        except (requests.exceptions.Timeout,
-                requests.exceptions.HTTPError,
+        except requests.exceptions.Timeout:
+            continue
+        except (requests.exceptions.HTTPError,
                 requests.RequestException):
             logger.error('Get some sleep. Then try to reconnect')
             sleep(300)
         except socket.timeout:
             logger.error('Everything has gone down the cunt')
-
 
 
 def main():
