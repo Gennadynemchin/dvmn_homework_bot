@@ -42,7 +42,7 @@ git clone https://github.com/Gennadynemchin/dvmn_homework_bot.git
 4. Save `.env.example` as `.env`
 5. Build an image:
 `docker build -t your-image-name . `
-6. Then `docker run -d your-image-name`
+6. Then `docker run -d --restart always your-image-name`
 
 ### Project Goals
 
