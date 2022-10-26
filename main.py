@@ -29,11 +29,10 @@ def long_polling(url, bot, token, chat_id):
     while True:
         try:
             total_retries = 5
-            backoff_factor = 1
-            timeout = 1
+            backoff_factor = 150
             retries = Retry(total=total_retries, backoff_factor=backoff_factor)
             s.mount(url, HTTPAdapter(max_retries=retries))
-            response = s.get(url, headers=headers, params=params, timeout=timeout)
+            response = s.get(url, headers=headers, params=params)
             response.raise_for_status()
             homework_response = response.json()
             if homework_response['status'] == 'timeout':
@@ -52,14 +51,13 @@ def long_polling(url, bot, token, chat_id):
                     bot.send_message(chat_id=chat_id,
                                      text=f"Работа '{work_title}' успешно выполнена. {work_link}")
                 params = {'timestamp': last_attempt_timestamp}
-        except (requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout,
+        except (requests.exceptions.Timeout,
                 requests.exceptions.HTTPError,
                 requests.RequestException):
             logger.error('Get some sleep. Then try to reconnect')
-            sleep(2)
+            sleep(300)
         except socket.timeout:
-            logger.critical('Everything has gone down the cunt')
+            logger.error('Everything has gone down the cunt')
 
 
 
