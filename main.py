@@ -5,6 +5,7 @@ import telegram
 import logging
 from dotenv import load_dotenv
 from time import time, sleep
+from urllib3.exceptions import NewConnectionError
 from requests.adapters import HTTPAdapter, Retry
 
 logger = logging.getLogger('MyLogger')
@@ -53,7 +54,7 @@ def long_polling(url, bot, token, chat_id):
         except requests.exceptions.Timeout:
             continue
         except (requests.exceptions.HTTPError,
-                requests.RequestException):
+                requests.RequestException, NewConnectionError):
             logger.error('Get some sleep. Then try to reconnect')
             sleep(300)
         except socket.timeout:
